@@ -7,6 +7,8 @@ import {
   deleteProduct,
   uploadProductImages,
   setMainImage,
+  toggleProductFeatured,
+  getFeaturedProducts,
   deleteProductImage,
   // Add the new controller functions
   getProductBySlug,
@@ -30,6 +32,7 @@ const router = express.Router();
 router.get('/', getProducts);
 router.get('/search', searchProducts);
 router.get('/slug/:slug', getProductBySlug);
+router.get('/featured', getFeaturedProducts);
 router.get('/category/:categoryId', getProductsByCategory);
 router.get('/tribe/:tribeId', getProductsByTribe);
 router.get('/:id', getProductById);
@@ -41,6 +44,7 @@ router.use(restrictTo(Role.ADMIN));
 router.post('/', createProduct);
 router.put('/:id', updateProduct);
 router.delete('/:id', deleteProduct);
+router.patch('/:id/featured', toggleProductFeatured);
 router.patch('/:id/publish', toggleProductPublication);
 
 // Product image routes

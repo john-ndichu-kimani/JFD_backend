@@ -86,6 +86,35 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+// Get featured products
+export const getFeaturedProducts = asyncHandler(async (req: Request, res: Response) => {
+  const limit = parseInt(req.query.limit as string) || 6;
+  
+  // Get featured products
+  const featuredProducts = await prisma.product.findMany({
+    where: {
+      isFeatured: true,
+      isPublished: true, // Only return published products
+    },
+    take: limit,
+    include: {
+      category: true,
+      tribe: true,
+      images: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+  
+  res.status(200).json({
+    success: true,
+    data: {
+      products: featuredProducts,
+    },
+  });
+});
+
 // Get product by ID or slug
 export const getProductById = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -128,8 +157,6 @@ export const createProduct = asyncHandler(async (req: AuthenticatedRequest, res:
       errors: errors.array(),
     });
   }
-
-
   
   const {
     name,
@@ -149,6 +176,7 @@ export const createProduct = asyncHandler(async (req: AuthenticatedRequest, res:
     authenticity,
     provenance,
     culturalContext,
+    isFeatured,
   } = req.body;
 
   if (!name || !slug || !description || !price || !stockQuantity || !categoryId) {
@@ -157,8 +185,6 @@ export const createProduct = asyncHandler(async (req: AuthenticatedRequest, res:
       message: 'Missing required fields',
     });
   }
-
-  
   
   // Create product
   const product = await prisma.product.create({
@@ -167,19 +193,15 @@ export const createProduct = asyncHandler(async (req: AuthenticatedRequest, res:
       slug,
       description,
       price: parseFloat(price),
-      discountPrice: discountPrice ? parseFloat(discountPrice) : null,
       stockQuantity: parseInt(stockQuantity),
       categoryId,
       tribeId: tribeId || null,
       isAntique: Boolean(isAntique),
+      isFeatured: Boolean(isFeatured) || false,
       origin: origin || null,
-      age: age || null,
       materials: materials || null,
       dimensions: dimensions || null,
       condition: condition || null,
-      authenticity: authenticity || null,
-      provenance: provenance || null,
-      culturalContext: culturalContext || null,
     },
   });
   
@@ -235,6 +257,7 @@ export const updateProduct = asyncHandler(async (req: AuthenticatedRequest, res:
     authenticity,
     provenance,
     culturalContext,
+    isFeatured,
   } = req.body;
   
   // Update product
@@ -247,19 +270,15 @@ export const updateProduct = asyncHandler(async (req: AuthenticatedRequest, res:
       slug,
       description,
       price: parseFloat(price),
-      discountPrice: discountPrice ? parseFloat(discountPrice) : null,
       stockQuantity: parseInt(stock),
       categoryId,
       tribeId: tribeId || null,
       isAntique: Boolean(isAntique),
+      isFeatured: isFeatured !== undefined ? Boolean(isFeatured) : undefined,
       origin: origin || null,
-      age: age || null,
       materials: materials || null,
       dimensions: dimensions || null,
       condition: condition || null,
-      authenticity: authenticity || null,
-      provenance: provenance || null,
-      culturalContext: culturalContext || null,
     },
   });
   
@@ -271,7 +290,54 @@ export const updateProduct = asyncHandler(async (req: AuthenticatedRequest, res:
   });
 });
 
-
+// Toggle product featured status (admin only)
+export const toggleProductFeatured = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const { isFeatured } = req.body;
+  
+  if (isFeatured === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: 'isFeatured field is required',
+    });
+  }
+  
+  // Check if product exists
+  const productExists = await prisma.product.findUnique({
+    where: {
+      id,
+    },
+  });
+  
+  if (!productExists) {
+    return res.status(404).json({
+      success: false,
+      message: 'Product not found',
+    });
+  }
+  
+  // Update product featured status
+  const product = await prisma.product.update({
+    where: {
+      id,
+    },
+    data: {
+      isFeatured: Boolean(isFeatured),
+    },
+    include: {
+      category: true,
+      tribe: true,
+      images: true,
+    },
+  });
+  
+  res.status(200).json({
+    success: true,
+    data: {
+      product,
+    },
+  });
+});
 
 // Get product by slug
 export const getProductBySlug = asyncHandler(async (req: Request, res: Response) => {

@@ -78,7 +78,6 @@ model Product {
   slug            String         @unique
   description     String
   price           Decimal
-  discountPrice   Decimal?
   stockQuantity   Int            @default(1)
   categoryId      String
   category        Category       @relation(fields: [categoryId], references: [id])
@@ -88,14 +87,11 @@ model Product {
   updatedAt       DateTime       @updatedAt
   images          ProductImage[]
   isAntique       Boolean        @default(false)
+  isFeatured     Boolean @default(false)
   origin          String?
-  age             String?
   materials       String?
   dimensions      String?
   condition       String?
-  authenticity    String?
-  provenance      String?
-  culturalContext String?
   isPublished     Boolean        @default(true)
   orderItems      OrderItem[]
   cartItems       CartItem[]
