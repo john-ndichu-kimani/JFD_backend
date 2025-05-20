@@ -185,12 +185,12 @@ export const createProduct = asyncHandler(async (req: AuthenticatedRequest, res:
   // Create product
   const product = await prisma.product.create({
     data: {
-      name,
-      slug,
-      description,
+      name:name,
+      slug:slug,
+      description:description,
       price: parseFloat(price),
       stockQuantity: parseInt(stockQuantity),
-      categoryId,
+      categoryId:categoryId,
       tribeId: tribeId || null,
       isAntique: Boolean(isAntique),
       isFeatured: Boolean(isFeatured) || false,
