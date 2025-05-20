@@ -163,28 +163,24 @@ export const createProduct = asyncHandler(async (req: AuthenticatedRequest, res:
     slug,
     description,
     price,
-    discountPrice,
     stockQuantity,
     categoryId,
     tribeId,
     isAntique,
     origin,
-    age,
     materials,
     dimensions,
     condition,
-    authenticity,
-    provenance,
-    culturalContext,
+  
     isFeatured,
   } = req.body;
 
-  if (!name || !slug || !description || !price || !stockQuantity || !categoryId) {
-    return res.status(400).json({
-      success: false,
-      message: 'Missing required fields',
-    });
-  }
+  // if (!name || !slug || !description || !price || !stockQuantity || !categoryId) {
+  //   return res.status(400).json({
+  //     success: false,
+  //     message: 'Missing required fields',
+  //   });
+  // }
   
   // Create product
   const product = await prisma.product.create({
@@ -244,19 +240,16 @@ export const updateProduct = asyncHandler(async (req: AuthenticatedRequest, res:
     slug,
     description,
     price,
-    discountPrice,
     stock,
     categoryId,
     tribeId,
     isAntique,
     origin,
-    age,
+ 
     materials,
     dimensions,
     condition,
-    authenticity,
-    provenance,
-    culturalContext,
+   
     isFeatured,
   } = req.body;
   
