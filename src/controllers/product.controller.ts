@@ -171,28 +171,28 @@ export const createProduct = asyncHandler(async (req: AuthenticatedRequest, res:
     materials,
     dimensions,
     condition,
-  
     isFeatured,
   } = req.body;
 
-  // if (!name || !slug || !description || !price || !stockQuantity || !categoryId) {
-  //   return res.status(400).json({
-  //     success: false,
-  //     message: 'Missing required fields',
-  //   });
-  // }
+  // Validate required fields
+  if (!name || !slug || !description || !price || !stockQuantity || !categoryId) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing required fields',
+    });
+  }
   
   // Create product
   const product = await prisma.product.create({
     data: {
-      name:name,
-      slug:slug,
-      description:description,
+      name,
+      slug,
+      description,
       price: parseFloat(price),
       stockQuantity: parseInt(stockQuantity),
-      categoryId:categoryId,
+      categoryId,
       tribeId: tribeId || null,
-      isAntique: Boolean(isAntique),
+      isAntique: Boolean(isAntique) || false,
       isFeatured: Boolean(isFeatured) || false,
       origin: origin || null,
       materials: materials || null,
