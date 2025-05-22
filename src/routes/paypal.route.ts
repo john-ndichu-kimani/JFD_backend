@@ -5,29 +5,21 @@ import {
   handlePaypalCancellation,
   handlePaypalWebhook
 } from '../controllers/paypal.controller';
-import { asyncHandler } from '../middleware/error';
-
+import { protect } from '../middleware/auth';
 const router = Router();
 
+router.use(protect)
 
-router.post(
-  '/orders/:orderId',
- 
-);
+// Initiate PayPal payment (must be authenticated)
+router.post('/pay/:orderId', initiatePaypalPayment);
 
+// PayPal confirmation (callback from PayPal after payment approval)
+router.get('/success', handlePaypalConfirmation);
 
-router.get(
-  '/success',
-);
+// PayPal cancellation (callback if user cancels on PayPal)
+router.get('/cancel', handlePaypalCancellation);
 
-
-router.get(
-  '/cancel',
-);
-
-
-router.post(
-  '/webhook',
-);
+// Webhook from PayPal (should be configured in PayPal dashboard)
+router.post('/webhook', handlePaypalWebhook);
 
 export default router;

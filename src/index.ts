@@ -10,6 +10,7 @@ import productRouter from './routes/product.route';
 import cartRouter from './routes/cart.route';
 import categoryRouter from './routes/category.route'
 import tribeRouter from './routes/tribe.route'
+import orderRouter from './routes/order.route'
 import paypalRouter from './routes/paypal.route'
 
 const app = express();
@@ -41,10 +42,11 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
-app.use('/api/cart', cartRouter);
+app.use('/api/carts', cartRouter);
 app.use('/api/categories', categoryRouter);
+app.use('/api/orders', orderRouter);
 app.use('/api/tribes', tribeRouter);
-app.use('api/paypal',paypalRouter)
+app.use('/api/paypal',paypalRouter)
 
 // Error handling middleware (should be last)
 app.use(errorHandler);
@@ -56,6 +58,9 @@ app.use('*', (req, res) => {
     message: 'Endpoint not found'
   });
 });
+
+// Error handling middleware
+app.use(errorHandler);
 
 // Start server
 const PORT = config.port || 5000;

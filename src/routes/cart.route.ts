@@ -1,35 +1,27 @@
 import express from 'express';
-import {
-  getUserCart,
-  addItemToCart,
-  updateCartItem,
-  removeCartItem,
-  clearCart,
+import { 
+  getCartById,
+  addItemToCart, 
+  updateCartItem, 
+  removeCartItem, 
+  clearCart
 } from '../controllers/cart.controller';
-import { protect } from '../middleware/auth';
-// import {
-//   validateAddItemToCart,
-//   validateUpdateCartItem,
-// } from '../validators/cartValidator';
 
 const router = express.Router();
 
-// All routes require authentication
-router.use(protect);
+// GET /api/carts/:sessionId - Get user's cart by session ID
+router.get('/:sessionId', getCartById);
 
-// GET /api/cart - Get user's cart
-router.get('/', getUserCart);
+// POST /api/carts/:cartId/items - Add item to cart
+router.post('/:cartId/items', addItemToCart);
 
-// POST /api/cart/items - Add item to cart
-router.post('/items', addItemToCart);
+// PATCH /api/carts/items/:itemId - Update cart item quantity
+router.patch('/items/:itemId', updateCartItem);
 
-// PUT /api/cart/items/:itemId - Update cart item quantity
-router.put('/items/:itemId',  updateCartItem);
-
-// DELETE /api/cart/items/:itemId - Remove item from cart
+// DELETE /api/carts/items/:itemId - Remove item from cart
 router.delete('/items/:itemId', removeCartItem);
 
-// DELETE /api/cart/clear - Clear entire cart
-router.delete('/clear', clearCart);
+// DELETE /api/carts/:cartId - Clear entire cart
+router.delete('/:cartId', clearCart);
 
 export default router;
