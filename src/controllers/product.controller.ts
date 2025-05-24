@@ -5,7 +5,6 @@ import { asyncHandler } from '../middleware/error';
 import { AuthenticatedRequest } from '../types';
 import { getFileUrl } from '../middleware/upload';
 
-// Get all products with pagination and filtering
 export const getProducts = asyncHandler(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 12;
@@ -94,7 +93,7 @@ export const getFeaturedProducts = asyncHandler(async (req: Request, res: Respon
   const featuredProducts = await prisma.product.findMany({
     where: {
       isFeatured: true,
-      isPublished: true, // Only return published products
+      isPublished: true, 
     },
     take: limit,
     include: {
@@ -245,11 +244,9 @@ export const updateProduct = asyncHandler(async (req: AuthenticatedRequest, res:
     tribeId,
     isAntique,
     origin,
- 
     materials,
     dimensions,
     condition,
-   
     isFeatured,
   } = req.body;
   
@@ -476,6 +473,66 @@ export const getProductsByCategory = asyncHandler(async (req: Request, res: Resp
     },
   });
 });
+
+export const getProductsByCategorySlug = asyncHandler(async (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 12;
+  const skip = (page - 1) * limit;
+  
+  // Verify the category exists by slug
+  const category = await prisma.category.findUnique({
+    where: {
+      slug,
+    },
+  });
+  
+  if (!category) {
+    return res.status(404).json({
+      success: false,
+      message: 'Category not found',
+    });
+  }
+  
+  const [products, total] = await Promise.all([
+    prisma.product.findMany({
+      where: {
+        categoryId: category.id,
+      },
+      skip,
+      take: limit,
+      include: {
+        category: true,
+        tribe: true,
+        images: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    }),
+    prisma.product.count({
+      where: {
+        categoryId: category.id,
+      },
+    }),
+  ]);
+  
+  res.status(200).json({
+    success: true,
+    data: {
+      products,
+      category, // Include category info in response
+    },
+    pagination: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
+  });
+
+  });
+
 
 // Get products by tribe
 export const getProductsByTribe = asyncHandler(async (req: Request, res: Response) => {

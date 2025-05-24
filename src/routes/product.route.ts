@@ -15,7 +15,8 @@ import {
   searchProducts,
   getProductsByCategory,
   getProductsByTribe,
-  toggleProductPublication
+  toggleProductPublication,
+  getProductsByCategorySlug
 } from '../controllers/product.controller';
 import { protect, restrictTo } from '../middleware/auth';
 import { Role } from '@prisma/client';
@@ -33,7 +34,8 @@ router.get('/', getProducts);
 router.get('/search', searchProducts);
 router.get('/slug/:slug', getProductBySlug);
 router.get('/featured', getFeaturedProducts);
-router.get('/category/:categoryId', getProductsByCategory);
+// router.get('/category/:categoryId', getProductsByCategory);
+router.get('/category/:slug', getProductsByCategorySlug);
 router.get('/tribe/:tribeId', getProductsByTribe);
 router.get('/:id', getProductById);
 

@@ -48,6 +48,8 @@ app.use('/api/orders', orderRouter);
 app.use('/api/tribes', tribeRouter);
 app.use('/api/paypal',paypalRouter)
 
+app.use('/uploads',express.static('uploads'))
+
 // Error handling middleware (should be last)
 app.use(errorHandler);
 

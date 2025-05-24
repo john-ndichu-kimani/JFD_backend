@@ -13,7 +13,6 @@ interface PayPalTokenResponse {
 
 // Generate PayPal access token
 const generateAccessToken = async (): Promise<string> => {
-  // Fixed the typo in clientId
   const auth = Buffer.from(`${config.paypalClientId}:${config.paypalClientSecret}`).toString('base64');
   
   const response = await axios.post<PayPalTokenResponse>(
